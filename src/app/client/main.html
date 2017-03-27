@@ -1,0 +1,21 @@
+<head>
+    <title>Document automatic annotation</title>
+</head>
+
+<body>
+	{{> processPhoto}}
+</body>
+
+<template name="processPhoto">
+	<input type="button" class="take-photo" value="Take Photo">
+	<input type="button" class="view-galery" value="View Galery">
+	<br/><br/>
+	<input type="button" class="send-to-server" value="Send to server">
+	<input type="button" class="send-to-sugar" value="Send to Sugar">
+
+	{{#if error}}
+		<p>{{error}}</p>
+	{{else}}
+		<img src="{{photo}}">
+	{{/if}}
+</template>

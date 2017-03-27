@@ -1,0 +1,86 @@
+Dizertatie.
+
+1. Install Meteor JS
+- curl https://install.meteor.com/ | sh 
+
+2. Create Meteor app
+- meteor create simple-todos
+- cd simple-todos
+- meteor npm install
+- meteor
+
+3. Access the app by typing http://localhost:3000 into the browser
+
+4. Run the app on Android
+
+4.1 Install JDK (Java Development Kit)
+
+-sudo add-apt-repository ppa:webupd8team/java
+-sudo apt-get update
+-sudo apt-get install oracle-java8-installer
+
+4.2 Install Android Studio
+
+- sudo add-apt-repository ppa:ubuntu-desktop/ubuntu-make
+- sudo apt-get update
+- sudo apt-get install ubuntu-make
+- umake android (default installation path -> /home/vali/.local/share/umake/android/android-studio)
+- enter on https://developer.android.com/studio/index.html and download SDK Tools for linux
+- extract the archive, to into the tools folder and type ./android
+- check 7.1.1, 6.0, 5.1.1, 5.0.1, 4.4.2 
+- sudo apt install gedit
+- gedit ~/.bashrc
+- add in the top of the file the following
+  	export PATH=${PATH}:~/Downloads/tools
+	export PATH=${PATH}:~/Downloads/platform-tools
+- close and open the terminal
+- type android avd and create a new device with the following properties
+    device - 4.7
+    target - Android 5.1.1
+    CPU/ABI - i86 - 64
+    skin with dynamic hardware controls
+    RAM 512 
+    VM heap 16
+    Internal storage 200
+    SD card 20
+- meteor add-platform android
+- meteor run android
+- meteor run android-device
+
+4.3 Install Camera Plugin
+- meteor add-platform android
+- meteor add mdg:camera
+- meteor run android
+- meteor update
+- meteor update --all-packages
+- meteor run android
+
+4.4 Fixing no permissions for the device
+- adb devices
+- sudo adb kill-server
+- adb kill-server
+- adb start-server
+- sudo adb kill-server
+- sudo adb start-server
+- adb usb
+- Settings->Storage->Menu->MTP
+
+4.5 Install NVM
+- nvm list
+- nvm install stable
+- nvm switch stable
+- nvm use stable
+- cd simple-todos
+- mkdir ocr-server
+- cd ocr-server
+- npm init (enter description, author and ISC)
+- npm install tesseract.js
+- node -v
+- node -i
+- which node
+- nano index.js 
+- chmod +x index.js 
+- ./index.js
+- sudo ln -s /home/vali/simple-todos/ocr-server/index.js /usr/bin/ocr
+- ocr
+- ocr out.jpg
