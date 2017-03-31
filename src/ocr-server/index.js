@@ -1,14 +1,14 @@
 #!/home/vali/.nvm/versions/node/v7.7.3/bin/node
 
-var Tesseract = require('tesseract.js');
-var SafeStringify = require('json-stringify-safe');
-var CircularJSON = require('circular-json');
-var FileSystem = require('file-system');
+const Tesseract = require('tesseract.js');
+const SafeStringify = require('json-stringify-safe');
+const CircularJSON = require('circular-json');
+const FileSystem = require('file-system');
 
-var photo = process.argv[2];
+var photoName = process.argv[2];
 var outputFile = process.argv[3];
 
-var job = Tesseract.recognize(photo);
+var job = Tesseract.recognize(photoName);
 	
 job.progress(function(message) {
 	console.log(message);
@@ -19,12 +19,10 @@ job.catch(function(err) {
 })
 
 job.then(function(result) {
-	console.log(result);
+	// console.log(result);
 })
 
 job.finally(function(resultOrError) {
-	// console.log(resultOrError);
-
 	var string = JSON.stringify(resultOrError.words.map(function(word) {
 		return word.text
 	}));
@@ -36,8 +34,12 @@ job.finally(function(resultOrError) {
 		FileSystem.writeFile(outputFile, string, function (err) {
 		    if (err) 
 		        return console.log(err);
-		});
-	}
 
-  	// process.exit();
+		    console.log('Done adding the processed text to output file');
+		    process.exit();
+		});
+	} else {
+		console.log('Done');
+		process.exit();
+	}
 })
