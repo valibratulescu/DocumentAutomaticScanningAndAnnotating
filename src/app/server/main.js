@@ -12,7 +12,8 @@ const path = require('path');
 
 var outputFile = 'output.json';
 var photoKeyName = 'img';
-var photoExtension = '.jpg';
+var photoExtension = '.jpeg';
+var ocrSymlink = 'ocr';
 
 Meteor.startup(() => {
     Meteor.methods({
@@ -20,19 +21,20 @@ Meteor.startup(() => {
 	    	var photoPath = arguments[0].replace('data:image/jpeg;base64,', '');
 
 	    	if (!photoPath) {
-	    		console.log('No photo has been selected');
+	    		console.log('No photo has been selected!');
 
 	    		return;
 	    	}
-
+	    	
 	    	var photoName = Meteor.call('generatePhotoName');
-	    	var photoName = 'out.jpg';
+	    	var photoName = 'out' + photoExtension;
 
 	    	fs.writeFile(photoName, photoPath, 'base64', Meteor.call('processFile', photoName));
 	    },
 	    processFile: function(photoName) {
-	    	var nodePath = Meteor.call('getNodePath');
-			var args = [nodePath, photoName, outputFile];
+	    	var realPhotoPath = Meteor.call('getPhotoPath') + '/' + photoName;
+
+	    	var args = [ocrSymlink, realPhotoPath, outputFile];
 			var parsedArgs = args.join(' ');
 
 			exec(parsedArgs, (err, stdout, stderr) => {
@@ -53,18 +55,12 @@ Meteor.startup(() => {
 
 	    	return photoName;
 	    },
-	    getNodePath: function() {
-	    	var nodePath = '';
+	    getPhotoPath: function() {
+	    	var photoPath = '';
 
-	    	nodePath = path.resolve("../../../../../../ocr-server") + '/index.js';
+	    	photoPath = path.resolve();
 
-	    	return nodePath;
-	    },
-	    generatePDF: function() {
-	    	var pdf = new jsPDF()
- 
-			pdf.text('Hello world!', 10, 10);
-			pdf.save('a4.pdf');
-	    },
+	    	return photoPath;
+},
 	});
 });

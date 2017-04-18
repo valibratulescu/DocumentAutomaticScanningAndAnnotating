@@ -84,3 +84,6 @@ Dizertatie.
 - sudo ln -s /home/vali/simple-todos/ocr-server/index.js /usr/bin/ocr
 - ocr
 - ocr out.jpg
+
+4.6 Install JSPDF
+- npm install https://github.com/calvinfroedge/node-jspdf.git
