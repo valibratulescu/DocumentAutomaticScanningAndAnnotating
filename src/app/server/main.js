@@ -10,31 +10,34 @@ import {
 const exec = require('child_process').exec;
 const path = require('path');
 
-var outputFile = 'output.json';
+var docType = 'pdf';
 var photoKeyName = 'img';
 var photoExtension = '.jpeg';
-var ocrSymlink = 'ocr';
+var ocrSymlink = 'tesseract';
 
 Meteor.startup(() => {
     Meteor.methods({
 	    sendPhotoToServer: function() {
-	    	var photoPath = arguments[0].replace('data:image/jpeg;base64,', '');
+	    	var encPhotoPath = arguments[0].replace('data:image/jpeg;base64,', '');
 
-	    	if (!photoPath) {
+	    	if (!encPhotoPath) {
 	    		console.log('No photo has been selected!');
 
 	    		return;
 	    	}
 	    	
 	    	var photoName = Meteor.call('generatePhotoName');
-	    	var photoName = 'out' + photoExtension;
+	    	// var photoName = 'out' + photoExtension;
 
-	    	fs.writeFile(photoName, photoPath, 'base64', Meteor.call('processFile', photoName));
+	    	fs.writeFile(photoName, encPhotoPath, 'base64', Meteor.call('processFile', photoName));
 	    },
 	    processFile: function(photoName) {
-	    	var realPhotoPath = Meteor.call('getPhotoPath') + '/' + photoName;
+	    	var photoPath = Meteor.call('getPhotoPath') + '/' + photoName;
+	    	var docName = Meteor.call('generateDocumentName', photoName);
 
-	    	var args = [ocrSymlink, realPhotoPath, outputFile];
+	    	// photoPath = '/home/vali/Desktop/test.jpg';
+
+	    	var args = [ocrSymlink, photoPath, docName, docType];
 			var parsedArgs = args.join(' ');
 
 			exec(parsedArgs, (err, stdout, stderr) => {
@@ -55,12 +58,15 @@ Meteor.startup(() => {
 
 	    	return photoName;
 	    },
+	    generateDocumentName: function(photoName) {
+	    	return docType + '-' + photoName;
+	    },
 	    getPhotoPath: function() {
 	    	var photoPath = '';
 
 	    	photoPath = path.resolve();
 
 	    	return photoPath;
-},
+		},
 	});
 });
