@@ -64,7 +64,6 @@ Dizertatie.
 - sudo adb start-server
 - adb usb
 - Settings->Storage->Menu->MTP
-- Open terminal, type monitor. Add files to android emulator (storage->emulated->0->DCIM->Camera)
 
 4.5 Install NVM
 - nvm list
@@ -92,3 +91,6 @@ Dizertatie.
 4.7 Install node-tesseract
 - npm install node-tesseract
 - sudo apt-get install tesseract-ocr
+
+4.8 Open terminal, type monitor. Add files to android emulator
+- storage->emulated->0->DCIM->Camera
