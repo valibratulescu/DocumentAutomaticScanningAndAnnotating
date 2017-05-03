@@ -11,10 +11,10 @@ import {
 	HTTP 
 } from 'meteor/http'
 
-let nlp = require('compromise');
-
 const exec = require('child_process').exec;
 const path = require('path');
+const request = require('request');
+const nlp = require('compromise');
 
 var currentDate = moment().format('YYYY-MM-DD-HH-mm-ss');
 var currentPath = path.resolve();
@@ -87,7 +87,7 @@ Meteor.startup(() => {
 			// Get Sugar authentification token that will be used to create a new Note
 			var method = 'POST';
 			var url = sugarURL + '/oauth2/token';
-			var postData = {
+			var options = {
 				data : {
 					'grant_type': 'password',
 					'client_id': 'sugar',
@@ -98,7 +98,7 @@ Meteor.startup(() => {
 				}
 			};
 
-			HTTP.call(method, url, postData, function(error, result) {
+			HTTP.call(method, url, options, function(error, result) {
 				if (error) {
 					console.log(error);
 
@@ -121,7 +121,7 @@ Meteor.startup(() => {
 
 			var method = 'POST';
 			var url = sugarURL + '/Notes'
-			var postData = {
+			var options = {
 				headers: {
 					"Content-Type": "application/json",
 					"oauth-token": token,
@@ -132,7 +132,7 @@ Meteor.startup(() => {
 				}
 			};
 
-			HTTP.call(method, url, postData, function(error, result) {
+			HTTP.call(method, url, options, function(error, result) {
 				if (error) {
 					console.log(error);
 
@@ -149,29 +149,27 @@ Meteor.startup(() => {
 		addAttachmentToNote: function(token, noteId) {
 			console.log('Adding PDF file to newly note...');
 
-			var method = 'POST';
-			var url = sugarURL + '/Notes/' + noteId + '/file/filename';
-			var postData = {
+			var opts = {
+				url: sugarURL + '/Notes/' + noteId + '/file/filename',
+				method: 'POST',
 				headers: {
 					"oauth-token": token,
+					'content-type': 'application/pdf',
 				},
-				data: {
-				    "format": "sugar-html-json",
-				    "delete_if_fails": true,
-				    "oauth_token": token,
-				    'filename': docPath
-				}
+				formData: {
+					filename: fs.createReadStream(docPath)
+				},
+
 			};
 
-			HTTP.call(method, url, postData, function(error, result) {
-				if (error) {
-					console.log(error);
+			request(opts, function(errror, result, body) {
+		  		if (errror) {
+		  			console.log(error);
 
-					return;
-				}
+		  			return
+		  		}
 
-				console.log('PDF added to note!');
-				console.log(result.content);
+		  		console.log('PDF document added to the Note!');
 			});
 		}
 	});
