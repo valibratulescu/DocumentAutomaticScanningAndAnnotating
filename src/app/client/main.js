@@ -8,38 +8,87 @@ import {
 import './main.html';
 
 if (Meteor.isClient) {
+    Session.keys = {};
+    
     Template.processPhoto.events({
         'click .take-photo': function() {
-            MeteorCamera.getPicture({
-            }, function(error, data) {
-            	Session.set('photo', data);
-            	Session.set('error', error);
-            });
-        },
-        'click .view-galery': function() {
-            MeteorCamera.getPicture({
-            	quality: 100,
-            	width: -1,
-            	height: -1,
-            	sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-            }, function(error, data) {
-                Session.set('photo', data);
-            	Session.set('error', error);
-            });
-        },
-        'click .send-to-server': function() {
-        	var photo = Session.get('photo') || '';
+            var cameraOpts = {
+                quality: 100,
+                width: -1,
+                height: -1,
+            };
 
-            Meteor.call('sendPhotoToServer', photo, function (error, data) {
+            var callback = function(error, data) {
+                if (error)
+                    Session.set('error_taking_photo', error);
+
+                if (data)
+                    Session.set('test', data);
+            };
+
+            MeteorCamera.getPicture(cameraOpts, callback);
+        },
+        'click .choose-photo': function() {
+            var cameraOpts = {
+                quality: 100,
+                width: -1,
+                height: -1,
+                sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+            };
+
+            var callback = function(error, data) {
+                if (error)
+                    Session.set('error_choosing_photo', error);
+
+                if (data)
+                    Session.set('test', data);
+            };
+
+            MeteorCamera.getPicture(cameraOpts, callback);
+        },
+        'click .process-photo': function() {
+        	var photo = Session.get('test') || '';
+
+            if (photo === '') {
+                alert('No photo selected!');
+
+                return;
+            }
+
+            Meteor.call('processFile', photo, function (error, data) {
+                if (data.status === 'success') {
+                    Session.set('file_processed', true);
+                } else {
+                    Session.set('file_processed', false);
+                }
+                alert(data.data);
 			});
-        }
+        },
+        'click .view-content': function() {
+            Meteor.call('getContent', function (error, data) {
+                alert(data.data);
+            })
+        },
+        'click .generate-pdf': function() {
+            Meteor.call('generatePDF', function(error, data) {
+                alert(data.data);
+            })
+        },
+        'click .send-to-sugar': function() {
+            Meteor.call('performSugarRequest', function(error, data) {
+                alert(data.data);
+            })
+        },
     });
     Template.processPhoto.helpers({
         'photo': function() {
-            return Session.get('photo');
+            return Session.get('test');
         },
         'error': function() {
             return Session.get('error');
+        },
+        'file_processed': function() {
+            return Session.get('file_processed');
         },
     });
 }

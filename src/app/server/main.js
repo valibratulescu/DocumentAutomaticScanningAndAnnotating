@@ -11,6 +11,8 @@ import {
 	HTTP 
 } from 'meteor/http'
 
+Future = Npm.require('fibers/future');
+
 const exec = require('child_process').exec;
 const path = require('path');
 const request = require('request');
@@ -38,53 +40,114 @@ var sugarURL = 'http://192.168.1.3/rest/v10';
 
 Meteor.startup(() => {
     Meteor.methods({
-	    sendPhotoToServer: function(b64PhotoPath) {
-	    	if (!b64PhotoPath) {
-	    		console.log('No photo has been selected!');
-
-	    		return;
-	    	}
-
-	    	console.log('Sending photo to server...');
-
+	    processFile: function(b64PhotoPath) {
+	    	var future = new Future();
 	    	var b64PhotoPath = b64PhotoPath.replace('data:image/jpeg;base64,', '');
 
 	    	fs.writeFileSync(fullPhotoName, b64PhotoPath, 'base64');
 
-	    	console.log('Photo sent to server!');
-
-	    	Meteor.call('processFile')
-	    },
-	    processFile: function() {
 	    	var args = [processName, photoPath, tmpDocName, 'txt'].join(' ');
-	    	var child = exec(args);
 
-			child.on('close', Meteor.bindEnvironment(
-				function(code) {
-					console.log('Generating PDF file...');
+	    	exec(args, Meteor.bindEnvironment(
+    			function(error, stdout, stderr) {
+    				var response = {};
 
-					var args = [processName, photoPath, docName, 'pdf'].join(' ');
+					if (error) {
+				    	response = {
+				    		'status': 'error',
+				    		'data': error
+				    	};
+				  	} else {
+					  	response = {
+					  		'status': 'success',
+					  		'data': 'File has been successfully processed!'
+					  	};
+				  	}
+	
+			  		future["return"](response);
+				})
+			);
 
-		    		exec(args, Meteor.bindEnvironment(
-		    			function(error, stdout, stderr) {
-							if (error) {
-						    	console.log(error);
-
-						    	return;
-						  	}
-
-					  		console.log("PDF generated!");
-
-					  		Meteor.call('performSugarRequest');
-						})
-					);
-				}
-			));   	
+			return future.wait(); 	
 	    },
-		performSugarRequest: function() {
-			console.log('Retrieving Sugar auth token...');
 
-			// Get Sugar authentification token that will be used to create a new Note
+	    getContent: function() {
+	    	var result = {};
+
+	    	content = fs.readFileSync(fullTmpDocName, 'utf8');
+
+	    	return {
+	    		'status': 'success',
+	    		'data': content
+	    	};
+	    },
+
+	    generatePDF: function() {
+	    	var future = new Future();
+
+	    	var args = [processName, photoPath, docName, 'pdf'].join(' ');
+
+    		exec(args, Meteor.bindEnvironment(
+    			function(error, stdout, stderr) {
+    				var response;
+
+				  	if (error) {
+						response = {
+				    		'status': 'error',
+				    		'data': error
+				    	};
+					} else {
+						response = {
+				    		'status': 'success',
+				    		'data': 'PDF successfully generated!'
+				    	};
+					}
+
+			  		future["return"](response);
+				})
+			);
+
+			return future.wait(); 
+	    },
+
+		performSugarRequest: function() {
+			var sugarToken = Meteor.call('getSugarAuthToken').status === 'success' ? Meteor.call('getSugarAuthToken').data : '';
+
+			if (sugarToken === '') {
+				return {
+					'status': 'error',
+					'data': 'Failed retrieving Sugar authentification token.'
+				};
+			}
+
+			var sugarNoteId = Meteor.call('createSugarNote', sugarToken).status === 'success' ? Meteor.call('createSugarNote', sugarToken).data : '';
+
+			if (sugarNoteId === '') {
+				return {
+					'status': 'error',
+					'data': 'Failed creating Sugar note.'
+				};
+			}
+
+			var attachmentAdded = Meteor.call('addAttachmentToNote', sugarToken, sugarNoteId).status === 'success' ? Meteor.call('addAttachmentToNote', sugarToken, sugarNoteId).data : '';
+
+			if (attachmentAdded === '') {
+				return {
+					'status': 'error',
+					'data': 'Failed adding attachment to Sugar note.'
+				};
+			}
+
+			Meteor.call('removeTemporaryDoc', fullTmpDocName);
+
+			return {
+				'status': 'success',
+				'data': 'Sugar synchronization successfully made!'
+			};
+		},
+		getSugarAuthToken: function() {
+			var future = new Future();
+
 			var method = 'POST';
 			var url = sugarURL + '/oauth2/token';
 			var options = {
@@ -99,25 +162,27 @@ Meteor.startup(() => {
 			};
 
 			HTTP.call(method, url, options, function(error, result) {
-				if (error) {
-					console.log(error);
+				var response;
 
-					return;
+				if (error) {
+					response = {
+			    		'status': 'error',
+			    		'data': error
+			    	};
+				} else {
+					response = {
+			    		'status': 'success',
+			    		'data': JSON.parse(result.content).access_token
+			    	};
 				}
 
-				console.log('Sugar auth token retrieved!');
-
-				var token = JSON.parse(result.content).access_token;
-
-				Meteor.call('createSugarNote', token);
+				future["return"](response);
 			});
+
+			return future.wait();
 		},
 		createSugarNote: function(token) {
-			console.log('Creating Sugar note...');
-
-			var docContent = fs.readFileSync(fullTmpDocName, 'utf8');
-
-			fs.unlinkSync(fullTmpDocName);
+			var future = new Future();
 
 			var method = 'POST';
 			var url = sugarURL + '/Notes'
@@ -128,26 +193,32 @@ Meteor.startup(() => {
 				},
 				data: {
 				    "name": "Note-" + fullDocName,
-				    'description': docContent
+				    'description': Meteor.call('getContent').data
 				}
 			};
 
 			HTTP.call(method, url, options, function(error, result) {
-				if (error) {
-					console.log(error);
+				var response;
 
-					return;
+				if (error) {
+					response = {
+			    		'status': 'error',
+			    		'data': error
+			    	};
+				} else {
+					response = {
+			    		'status': 'success',
+			    		'data': JSON.parse(result.content).id
+			    	};
 				}
 
-				console.log("Sugar note created!");
-
-				var noteId = JSON.parse(result.content).id;
-
-				Meteor.call('addAttachmentToNote', token, noteId);
+				future["return"](response);
 			});
+
+			return future.wait();
 		},
 		addAttachmentToNote: function(token, noteId) {
-			console.log('Adding PDF file to newly note...');
+			var future = new Future();
 
 			var opts = {
 				url: sugarURL + '/Notes/' + noteId + '/file/filename',
@@ -162,15 +233,29 @@ Meteor.startup(() => {
 
 			};
 
-			request(opts, function(errror, result, body) {
-		  		if (errror) {
-		  			console.log(error);
+			request(opts, function(error, result, body) {
+				var response;
 
-		  			return
-		  		}
+				if (error) {
+					response = {
+			    		'status': 'error',
+			    		'data': error
+			    	};
+				} else {
+					response = {
+			    		'status': 'success',
+			    		'data': 'Attachment successfully added to Sugar note.'
+			    	};
+				}
 
-		  		console.log('PDF document added to the Note!');
+		  		future["return"](response);
 			});
-		}
+
+			return future.wait();
+		},
+		removeTemporaryDoc: function(docName) {
+			if (docName)
+				fs.unlinkSync(docName);
+		},
 	});
 });

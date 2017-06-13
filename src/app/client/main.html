@@ -3,20 +3,37 @@
 </head>
 
 <body>
-	{{> processPhoto}}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js"></script>
+	<div class='content'>
+		{{> processPhoto}}
+	</div>
 </body>
 
 <template name="processPhoto">
 	<input type="button" class="take-photo" value="Take Photo">
-	<input type="button" class="view-galery" value="View Galery">
+	<input type="button" class="choose-photo" value="Choose photo">
 	<br/><br/>
-	<input type="button" class="send-to-server" value="Send to server">
-	<input type="button" class="send-to-sugar" value="Send to Sugar">
-
-	{{#if error}}
-		<p>{{error}}</p>
-	{{else}}
-		<img src="{{photo}}">
+	{{#if photo}}
+		<input type="button" class="process-photo" value="Process photo">
 	{{/if}}
+	{{#if file_processed}}
+		<input type="button" class="view-content" value="View content">
+		<input type="button" class="generate-pdf" value="Generate PDF">
+		<input type="button" class="send-to-sugar" value="Send to Sugar">
+	{{/if}}
+
+	<ons-page id="helloworld-page">
+		<ons-toolbar>
+			<div class="center">
+			</div>
+			<div class="right">
+				<ons-toolbar-button>
+			    	<ons-icon icon="ion-navicon, material:md-menu"></ons-icon>
+			  	</ons-toolbar-button>
+			</div>
+		</ons-toolbar>
+
+		<p style="text-align: center">
+			<ons-button>Click me!</ons-button>
+		</p>
+	</ons-page>
 </template>
