@@ -23,3 +23,6 @@ mdg:camera
 momentjs:moment
 http
 rosh93:multipart-form-data
+twbs:bootstrap
+fortawesome:fontawesome
+reload
