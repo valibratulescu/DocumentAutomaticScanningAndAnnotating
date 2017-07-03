@@ -1,5 +1,5 @@
 # DocumentAutomaticScanningAndAnnotating
-##### Version: 1.00
+##### Version: 1.03
 ##### Author: Bratulescu Valentin Silviu
 
 ## Synopsis
