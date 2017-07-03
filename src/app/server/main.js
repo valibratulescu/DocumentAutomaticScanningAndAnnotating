@@ -18,35 +18,22 @@ const path = require('path');
 const request = require('request');
 const nlp = require('compromise');
 
-var currentDate = moment().format('YYYY-MM-DD-HH-mm-ss');
-var currentPath = path.resolve();
-
-var photoName = 'img-' + currentDate;
-var docName = 'doc-' + currentDate;
-
-var fullPhotoName = photoName + '.jpeg';
-var fullDocName = docName + '.pdf';
-
-var photoPath = currentPath + '/' + fullPhotoName;
-var docPath = currentPath + '/' + fullDocName;
-
 var processName = 'tesseract';
+var currentDate = moment().format('YYYY-MM-DD-HH-mm-ss');
 
-var tmpDocName = 'tmpDoc';
-var fullTmpDocName = tmpDocName + '.txt';
-
-// SugarCRM settings
-var sugarURL = 'http://192.168.1.3/rest/v10';
+var tmpPhotoName = 'tempImg-' + currentDate;
+var tmpDocName = 'tempDoc-' + currentDate;
+var pdfName = '';
 
 Meteor.startup(() => {
     Meteor.methods({
 	    processFile: function(b64PhotoPath) {
-	    	var future = new Future();
 	    	var b64PhotoPath = b64PhotoPath.replace('data:image/jpeg;base64,', '');
 
-	    	fs.writeFileSync(fullPhotoName, b64PhotoPath, 'base64');
+	    	fs.writeFileSync(tmpPhotoName + '.jpg', b64PhotoPath, 'base64');
 
-	    	var args = [processName, photoPath, tmpDocName, 'txt'].join(' ');
+	    	var future = new Future();
+	    	var args = [processName, tmpPhotoName + '.jpg', tmpDocName, 'txt'].join(' ');
 
 	    	exec(args, Meteor.bindEnvironment(
     			function(error, stdout, stderr) {
@@ -74,7 +61,7 @@ Meteor.startup(() => {
 	    getContent: function() {
 	    	var result = {};
 
-	    	content = fs.readFileSync(fullTmpDocName, 'utf8');
+	    	content = fs.readFileSync(tmpDocName + '.txt', 'utf8');
 
 	    	return {
 	    		'status': 'success',
@@ -82,10 +69,11 @@ Meteor.startup(() => {
 	    	};
 	    },
 
-	    generatePDF: function() {
-	    	var future = new Future();
+	    generatePDF: function(name) {
+	    	pdfName = name || Meteor.call(generatePDFName);
 
-	    	var args = [processName, photoPath, docName, 'pdf'].join(' ');
+	    	var future = new Future();
+	    	var args = [processName, tmpPhotoName + '.jpg', pdfName, 'pdf'].join(' ');
 
     		exec(args, Meteor.bindEnvironment(
     			function(error, stdout, stderr) {
@@ -110,8 +98,14 @@ Meteor.startup(() => {
 			return future.wait(); 
 	    },
 
-		performSugarRequest: function() {
-			var sugarToken = Meteor.call('getSugarAuthToken').status === 'success' ? Meteor.call('getSugarAuthToken').data : '';
+		performSugarRequest: function(params) {
+			var sugarURL = params[0];
+
+			var sugarToken = '';
+			var tokenRetrieved = Meteor.call('getSugarAuthToken', params);
+
+			if (tokenRetrieved.status === 'success')
+				sugarToken = tokenRetrieved.data;
 
 			if (sugarToken === '') {
 				return {
@@ -120,7 +114,11 @@ Meteor.startup(() => {
 				};
 			}
 
-			var sugarNoteId = Meteor.call('createSugarNote', sugarToken).status === 'success' ? Meteor.call('createSugarNote', sugarToken).data : '';
+			var sugarNoteId = '';
+			var noteCreated = Meteor.call('createSugarNote', sugarToken, sugarURL);
+
+			if (noteCreated.status === 'success')
+				sugarNoteId = noteCreated.data;
 
 			if (sugarNoteId === '') {
 				return {
@@ -129,34 +127,37 @@ Meteor.startup(() => {
 				};
 			}
 
-			var attachmentAdded = Meteor.call('addAttachmentToNote', sugarToken, sugarNoteId).status === 'success' ? Meteor.call('addAttachmentToNote', sugarToken, sugarNoteId).data : '';
 
-			if (attachmentAdded === '') {
+			var attachmentAdded = Meteor.call('addAttachmentToNote', sugarToken, sugarNoteId, sugarURL);
+
+			if (attachmentAdded.status === 'error') {
 				return {
 					'status': 'error',
 					'data': 'Failed adding attachment to Sugar note.'
 				};
 			}
 
-			Meteor.call('removeTemporaryDoc', fullTmpDocName);
+			Meteor.call('deleteFile', tmpDocName + '.txt');
+			Meteor.call('deleteFile', tmpPhotoName + '.jpg');
 
 			return {
 				'status': 'success',
 				'data': 'Sugar synchronization successfully made!'
 			};
 		},
-		getSugarAuthToken: function() {
+
+		getSugarAuthToken: function(params) {
 			var future = new Future();
 
 			var method = 'POST';
-			var url = sugarURL + '/oauth2/token';
+			var url = 'http://' + params[0] + '/rest/v10/oauth2/token';
 			var options = {
 				data : {
 					'grant_type': 'password',
 					'client_id': 'sugar',
 					'client_secret': '',
-					'username': 'vagrant',
-					'password': 'vagrant',
+					'username': params[1],
+					'password': params[2],
 					'platform': 'base',
 				}
 			};
@@ -181,18 +182,19 @@ Meteor.startup(() => {
 
 			return future.wait();
 		},
-		createSugarNote: function(token) {
+
+		createSugarNote: function(token, sugarURL) {
 			var future = new Future();
 
 			var method = 'POST';
-			var url = sugarURL + '/Notes'
+			var url = 'http://' + sugarURL + '/rest/v10/Notes'
 			var options = {
 				headers: {
 					"Content-Type": "application/json",
 					"oauth-token": token,
 				},
 				data: {
-				    "name": "Note-" + fullDocName,
+				    "name": "Note-for-" + pdfName,
 				    'description': Meteor.call('getContent').data
 				}
 			};
@@ -217,11 +219,13 @@ Meteor.startup(() => {
 
 			return future.wait();
 		},
-		addAttachmentToNote: function(token, noteId) {
+
+		addAttachmentToNote: function(token, noteId, sugarURL) {
+			var docPath = path.resolve() + '/' + pdfName + '.pdf';
 			var future = new Future();
 
 			var opts = {
-				url: sugarURL + '/Notes/' + noteId + '/file/filename',
+				url: 'http://' + sugarURL + '/rest/v10/Notes/' + noteId + '/file/filename',
 				method: 'POST',
 				headers: {
 					"oauth-token": token,
@@ -253,9 +257,14 @@ Meteor.startup(() => {
 
 			return future.wait();
 		},
-		removeTemporaryDoc: function(docName) {
-			if (docName)
-				fs.unlinkSync(docName);
+
+		deleteFile: function(fileName) {
+			if (fileName)
+				fs.unlinkSync(fileName);
+		},
+
+		generatePDFName: function() {
+			return 'PDF-' + currentDate;
 		},
 	});
 });

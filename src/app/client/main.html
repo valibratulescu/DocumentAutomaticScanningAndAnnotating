@@ -6,13 +6,15 @@
     <nav class="navbar navbar-default">
         <p class="text-center">Document automatic scanning and annotating</p>
     </nav>
+
     {{> processPhoto}}
-    <nav class="navbar navbar-default navbar-fixed-bottom" style="text-align: center;">
+
+    <nav class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
             <p class="text-center"> 
-                &copy; 2017 Document automatic scanning and annotating. <br/>
-                All Rights Reserved | Design by 
-                <a href="http://www.w-systems.com" target="=_blank">W-Systems</a>
+                &copy; 2017 Document automatic scanning and annotating. 
+                <br/> 
+                All Rights Reserved | Design by <a href="http://www.w-systems.com" target="=_blank">W-Systems</a>
             </p>
         </div>
     </nav>
@@ -26,37 +28,36 @@
                     <div class="wizard-inner">
                         <div class="connecting-line"></div>
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active">
-                                <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Select photo">
+                            <li class="active" role="presentation">
+                                <a aria-controls="step1" data-toggle="tab" href="#step1" role="tab" title="Select photo">
                                     <span class="round-tab">
                                         <i class="glyphicon glyphicon-folder-open"></i>
                                     </span>
                                 </a>
                             </li>
-
-                            <li role="presentation" class="disabled">
-                                <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Process photo">
+                            <li class="disabled" role="presentation">
+                                <a aria-controls="step2" data-toggle="tab" href="#step2" role="tab" title="Process photo">
                                     <span class="round-tab">
                                         <i class="glyphicon glyphicon-pencil"></i>
                                     </span>
                                 </a>
                             </li>
-                            <li role="presentation" class="disabled">
-                                <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Handle process result">
+                            <li class="disabled" role="presentation">
+                                <a aria-controls="step3" data-toggle="tab" href="#step3" role="tab" title="Handle process result">
                                     <span class="round-tab">
                                         <i class="glyphicon glyphicon-cog"></i>
                                     </span>
                                 </a>
                             </li>
-                            <li role="presentation" class="disabled">
-                                <a href="#step4" data-toggle="tab" aria-controls="step4" role="tab" title="Sync to Sugar">
+                            <li class="disabled" role="presentation">
+                                <a aria-controls="step4" data-toggle="tab" href="#step4" role="tab" title="Sync to Sugar">
                                     <span class="round-tab">
                                         <i class="glyphicon glyphicon-circle-arrow-up"></i>
                                     </span>
                                 </a>
                             </li>
-                            <li role="presentation" class="disabled">
-                                <a href="#complete" data-toggle="tab" aria-controls="complete" role="tab" title="Complete">
+                            <li class="disabled" role="presentation">
+                                <a aria-controls="complete" data-toggle="tab" href="#complete" role="tab" title="Complete">
                                     <span class="round-tab">
                                         <i class="glyphicon glyphicon-ok"></i>
                                     </span>
@@ -64,110 +65,161 @@
                             </li>
                         </ul>
                     </div>
-
                     <form role="form">
                         <div class="tab-content">
-                            <div class="tab-pane active" role="tabpanel" id="step1">
+                            <div class="tab-pane active" id="step1" role="tabpanel">
                                 <h3>Choose photo</h3>
                                 <p>Take a photo or select an existing one that you want to be processed</p>
-                                <i aria-hidden="true" class="fa fa-camera fa-2x take-photo" style=" vertical-align: middle;"></i> Take photo 
-                                <i aria-hidden="true" class="fa fa-cloud-upload fa-2x choose-photo" style=" vertical-align: middle;"></i> Choose photo
-                                <br/><br/>
+                                <i aria-hidden="true" class="fa fa-camera fa-2x take-photo"></i> Take photo 
+                                <i aria-hidden="true" class="fa fa-cloud-upload fa-2x choose-photo"></i> Choose photo
+                                <br>
+                                <br>
                                 <ul class="list-inline pull-right">
-                                    <li>
-                                        <button type="button" class="btn btn-primary next-step disabled" style="pointer-events: none">
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                                <br/><br/><br/>
-                                <div class="alert" role="alert" style="display: none; text-align:center;">
-                                    {{alertMessage}}
+                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
+                                </ul><br>
+                                <br>
+                                <br>
+                                <div class="alert alert-select-photo" role="alert">
+                                    {{alertOnSelectingPhoto}}
                                 </div>
                             </div>
-                            <div class="tab-pane" role="tabpanel" id="step2">
+                            <div class="tab-pane" id="step2" role="tabpanel">
                                 <h3>Process photo</h3>
                                 <p>Analize and extract text from photo</p>
-                                <i aria-hidden="true" class="fa fa-pencil-square-o fa-2x process-photo" style=" vertical-align: middle;"></i> Process photo
-                                <br/><br/>
+                                <i aria-hidden="true" class="fa fa-pencil-square-o fa-2x process-photo"></i> Process photo<br>
+                                <br>
                                 <ul class="list-inline pull-left">
-                                    <li>
-                                        <button type="button" class="btn btn-default prev-step">
-                                            Previous
-                                        </button>
-                                    </li>
+                                    <li><button class="btn btn-default prev-step" type="button">Previous</button></li>
                                 </ul>
                                 <ul class="list-inline pull-right">
-                                    <li>
-                                        <button type="button" class="btn btn-primary next-step disabled" style="pointer-events: none">
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                                <br/><br/><br/>
-                                <div id="test" class="alert" role="alert" style="display: none; text-align:center;">
-                                    {{photoProcessed}}
+                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
+                                </ul><br>
+                                <br>
+                                <br>
+                                <div class="alert alert-process-photo" role="alert">
+                                    {{alertOnProcessingPhoto}}
                                 </div>
                             </div>
-                            <div class="tab-pane" role="tabpanel" id="step3">
+                            <div class="tab-pane" id="step3" role="tabpanel">
                                 <h3>Handle process result</h3>
                                 <p>Perform desired action regarding the returned content</p>
-                                <i aria-hidden="true" class="fa fa-eye fa-2x view-content" data-toggle="modal" href="#tallModal" style=" vertical-align: middle;"></i> View content 
-                                <i aria-hidden="true" class="fa fa-file-pdf-o fa-2x generate-pdf" style=" vertical-align: middle;"></i> Generate PDF
-                                <br/><br/>
+                                <i aria-hidden="true" class="fa fa-eye fa-2x view-content" data-toggle="modal" href="#viewContentModal"></i> View content 
+                                <i aria-hidden="true" class="fa fa-file-pdf-o fa-2x" data-toggle="modal" href="#generatePDFModals"></i> Generate PDF<br>
+                                <br>
                                 <ul class="list-inline pull-left">
-                                    <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+                                    <li><button class="btn btn-default prev-step" type="button">Previous</button></li>
                                 </ul>
                                 <ul class="list-inline pull-right">
-                                    <li>
-                                        <button type="button" class="btn btn-primary next-step disabled" style="pointer-events: none">
-                                            Next
-                                        </button>
-                                    </li>
+                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
                                 </ul>
-                                <br/><br/><br/>
-                                <div id="test" class="alert" role="alert" style="display: none; text-align:center;">
-                                    {{pdfGenerated}}
+                                <br>
+                                <br>
+                                <br>
+                                <div class="alert alert-generate-pdf" role="alert">
+                                    {{alertOnGeneratingPDF}}
                                 </div>
-                                <div id="tallModal" class="modal modal-wide fade">
-                                  <div class="modal-dialog">
-                                    <div class="modal-content">
-                                      <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                        <h4 class="modal-title">Processed photo's result</h4>
-                                      </div>
-                                      <div class="modal-body">
-                                        <p>{{photoContent}}</p>
-                                      </div>
-                                      <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                      </div>
+                                <!-- 
+                                    Content modal
+                                -->
+                                <div class="modal modal-wide fade" id="viewContentModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+                                                <h4 class="modal-title">Processed photo's result</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>{{photoContent}}</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                  </div>
+                                </div>
+                                <!-- 
+                                    PDF modal
+                                -->
+                                <div class="modal modal-wide fade" id="generatePDFModals">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+                                                <h4 class="modal-title">Enter PDF name</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="sugar-url">Name</label> 
+                                                        <input class="form-control enter-pdf-name" type="text" maxlength="18" placeholder="Enter PDF name...">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-default close-modal" data-dismiss="modal" type="button">Close</button> 
+                                                <button class="btn btn-primary generate-pdf disabled" data-dismiss="modal" type="button">Proceed</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" role="tabpanel" id="step4">
+                            <div class="tab-pane" id="step4" role="tabpanel">
                                 <h3>Sync to Sugar</h3>
                                 <p>By performing this action, a new Note record will be created within Sugar and the generated PDF document will be automatically added to the newly Sugar note</p>
-                                <i aria-hidden="true" class="fa fa-cube fa-2x send-to-sugar" style=" vertical-align: middle;"></i> Send to Sugar
-                                <br/><br/>
+                                <i aria-hidden="true" class="fa fa-cube fa-2x" data-toggle="modal" href="#syncToSugarModal"></i> Synchronize to Sugar
+                                <br>
+                                <br>
                                 <ul class="list-inline pull-left">
-                                    <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+                                    <li><button class="btn btn-default prev-step" type="button">Previous</button></li>
                                 </ul>
                                 <ul class="list-inline pull-right">
-                                    <li><button type="button" class="btn btn-primary next-step">Next</button></li>
+                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
                                 </ul>
+                                <br>
+                                <br>
+                                <br>
+                                <div class="alert alert-syncing-to-sugar" role="alert">
+                                    {{alertOnSyncingToSugar}}
+                                </div>
+                                <!-- 
+                                    Sync to Sugar modal
+                                -->
+                                <div class="modal modal-wide fade" id="syncToSugarModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+                                                <h4 class="modal-title">Sugar configuration</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="sugar-url">Sugar URL</label> 
+                                                        <input class="form-control" id="sugar-url" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="sugar-username">Sugar username</label> 
+                                                        <input class="form-control" id="sugar-username" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="sugar-password">Sugar password</label> 
+                                                        <input class="form-control" id="sugar-password" type="password">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-default close-modal" data-dismiss="modal" type="button">Close</button> 
+                                                <button class="btn btn-primary sync-to-sugar disabled" data-dismiss="modal" type="button">Proceed</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="tab-pane" role="tabpanel" id="complete">
+                            <div class="tab-pane" id="complete" role="tabpanel">
                                 <h3>Complete</h3>
-                                <p>You have successfully completed all steps.</p>
-                                <br/>
+                                <p>You have successfully completed all steps.</p><br>
                                 <ul class="list-inline pull-right">
-                                    <li>
-                                        <button type="button" class="btn btn-primary next-step disabled" style="pointer-events: none">
-                                            Next
-                                        </button>
-                                    </li>
+                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
@@ -175,133 +227,154 @@
                     </form>
                 </div>
             </section>
-       </div>
+        </div>
     </div>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            //Initialize tooltips
-            $('.nav-tabs > li a[title]').tooltip();
+        /**
+         * Custom wizard
+         */
+       //Initialize tooltips
+       $('.nav-tabs > li a[title]').tooltip();
 
-            //Wizard
-            $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+       //Wizard
+       $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
 
-                var $target = $(e.target);
+           var $target = $(e.target);
 
-                if ($target.parent().hasClass('disabled')) {
-                    return false;
-                }
-            });
+           if ($target.parent().hasClass('disabled')) {
+               return false;
+           }
+       });
 
-            $(".next-step").click(function(e) {
+       $(".next-step").click(function(e) {
 
-                var $active = $('.wizard .nav-tabs li.active');
-                $active.next().removeClass('disabled');
-                nextTab($active);
+           var $active = $('.wizard .nav-tabs li.active');
+           $active.next().removeClass('disabled');
+           nextTab($active);
 
-            });
-            $(".prev-step").click(function(e) {
+       });
+       $(".prev-step").click(function(e) {
 
-                var $active = $('.wizard .nav-tabs li.active');
-                prevTab($active);
+           var $active = $('.wizard .nav-tabs li.active');
+           prevTab($active);
 
-            });
-        });
+       });
 
         function nextTab(elem) {
-            $(elem).next().find('a[data-toggle="tab"]').click();
+           $(elem).next().find('a[data-toggle="tab"]').click();
         }
 
         function prevTab(elem) {
-            $(elem).prev().find('a[data-toggle="tab"]').click();
+           $(elem).prev().find('a[data-toggle="tab"]').click();
         }
 
         /**
-         * MODAL JS
-         */$(".modal-wide").on("show.bs.modal", function() {
-  var height = $(window).height() - 200;
-  $(this).find(".modal-body").css("max-height", height);
-});
-
-        $('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
-
-        // loading js
-
-        /**
- * Module for displaying "Waiting for..." dialog using Bootstrap
- *
- * @author Eugene Maslovich <ehpc@em42.ru>
- */
-
-var waitingDialog = waitingDialog || (function ($) {
-    'use strict';
-
-    // Creating modal dialog's DOM
-    var $dialog = $(
-        '<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">' +
-        '<div class="modal-dialog modal-m">' +
-        '<div class="modal-content">' +
-            '<div class="modal-header"><h3 style="margin:0;"></h3></div>' +
-            '<div class="modal-body">' +
-                '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>' +
-            '</div>' +
-        '</div></div></div>');
-
-    return {
-        /**
-         * Opens our dialog
-         * @param message Custom message
-         * @param options Custom options:
-         *                options.dialogSize - bootstrap postfix for dialog size, e.g. "sm", "m";
-         *                options.progressType - bootstrap postfix for progress bar type, e.g. "success", "warning".
+         * Custom loading alert
          */
-        show: function (message, options) {
-            // Assigning defaults
-            if (typeof options === 'undefined') {
-                options = {};
-            }
-            if (typeof message === 'undefined') {
-                message = 'Loading';
-            }
-            var settings = $.extend({
-                dialogSize: 'm',
-                progressType: '',
-                onHide: null // This callback runs after the dialog was hidden
-            }, options);
+        var waitingDialog = waitingDialog || (function($) {
+           'use strict';
 
-            // Configuring dialog
-            $dialog.find('.modal-dialog').attr('class', 'modal-dialog').addClass('modal-' + settings.dialogSize);
-            $dialog.find('.progress-bar').attr('class', 'progress-bar');
-            if (settings.progressType) {
-                $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
-            }
-            $dialog.find('h3').text(message);
-            // Adding callbacks
-            if (typeof settings.onHide === 'function') {
-                $dialog.off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
-                    settings.onHide.call($dialog);
-                });
-            }
-            // Opening dialog
-            $dialog.modal();
-        },
-        /**
-         * Closes dialog
-         */
-        hide: function () {
-            $dialog.modal('hide');
-        }
-    };
+           // Creating modal dialog's DOM
+           var $dialog = $(
+               '<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">' +
+               '<div class="modal-dialog modal-m">' +
+               '<div class="modal-content">' +
+               '<div class="modal-header"><h3 style="margin:0;"></h3></div>' +
+               '<div class="modal-body">' +
+               '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>' +
+               '</div>' +
+               '</div></div></div>');
 
-})(jQuery);
+           return {
+               /**
+                * Opens our dialog
+                * @param message Custom message
+                * @param options Custom options:
+                *                options.dialogSize - bootstrap postfix for dialog size, e.g. "sm", "m";
+                *                options.progressType - bootstrap postfix for progress bar type, e.g. "success", "warning".
+                */
+               show: function(message, options) {
+                   // Assigning defaults
+                   if (typeof options === 'undefined') {
+                       options = {};
+                   }
+                   if (typeof message === 'undefined') {
+                       message = 'Loading';
+                   }
+                   var settings = $.extend({
+                       dialogSize: 'm',
+                       progressType: '',
+                       onHide: null // This callback runs after the dialog was hidden
+                   }, options);
 
+                   // Configuring dialog
+                   $dialog.find('.modal-dialog').attr('class', 'modal-dialog').addClass('modal-' + settings.dialogSize);
+                   $dialog.find('.progress-bar').attr('class', 'progress-bar');
+                   if (settings.progressType) {
+                       $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+                   }
+                   $dialog.find('h3').text(message);
+                   // Adding callbacks
+                   if (typeof settings.onHide === 'function') {
+                       $dialog.off('hidden.bs.modal').on('hidden.bs.modal', function(e) {
+                           settings.onHide.call($dialog);
+                       });
+                   }
+                   // Opening dialog
+                   $dialog.modal();
+               },
+               /**
+                * Closes dialog
+                */
+               hide: function() {
+                   $dialog.modal('hide');
+               }
+           };
+        })(jQuery);
+
+        // test//
+        $('input.enter-pdf-name').keyup(function() {
+            if($(this).val() != '') {
+               $('.generate-pdf').removeClass('disabled');
+               $('.generate-pdf').css('pointer-events', 'all');
+            } else {
+
+               $('.generate-pdf').addClass('disabled');
+               $('.generate-pdf').css('pointer-events', 'none');
+            }
+         });
+
+        // sugar test //
+
+        $('#sugar-url').keyup(function() {
+            if ($(this).val() == '' || $('#sugar-username').val() == '' || $('#sugar-password').val() == '') {
+                $('.sync-to-sugar').addClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'none');
+            } else {
+                $('.sync-to-sugar').removeClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'all');
+            }
+         });
+
+        $('#sugar-username').keyup(function() {
+            if ($(this).val() == '' || $('#sugar-url').val() == ''|| $('#sugar-password').val() == '') {
+                $('.sync-to-sugar').addClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'none');
+            } else {
+                $('.sync-to-sugar').removeClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'all');
+            }
+         });
+
+        $('#sugar-password').keyup(function() {
+            if ($(this).val() == '' || $('#sugar-username').val() == '' || $('#sugar-url').val() == '') {
+                $('.sync-to-sugar').addClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'none');
+            } else {
+                $('.sync-to-sugar').removeClass('disabled');
+                $('.sync-to-sugar').css('pointer-events', 'all');
+            }
+         });
     </script>
 </template>

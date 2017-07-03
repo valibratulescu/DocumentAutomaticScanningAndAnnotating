@@ -121,10 +121,44 @@ span.round-tab:hover {
         left: 35%;
     }
 }
-
 .modal.modal-wide .modal-dialog {
-  width: 100%;
+    width: 95%;
 }
 .modal-wide .modal-body {
-  overflow-y: auto;
+    overflow-y: auto;
+    max-height: 90vh;
+    word-wrap: break-word;
+}
+
+/**
+ * Custom CSS
+ */
+
+.navbar {
+    text-align: center;
+}
+
+.tab-pane > .fa {
+    vertical-align: middle;
+}
+
+.next-step {
+    pointer-events: none;
+}
+
+.alert {
+    display: none;
+    text-align: center;
+}
+
+.close-modal {
+    float: ;left: 
+}
+
+.generate-pdf {
+    pointer-events: none;
+}
+
+.sync-to-sugar {
+    pointer-events: none;
 }

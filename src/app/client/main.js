@@ -26,12 +26,12 @@ if (Meteor.isClient) {
 
             var callback = function(error, data) {
                 if (error) {
-                    alertMessage = "Error selecting photo!";
+                    alertOnSelectingPhoto = "Error selecting photo!";
                     alertClass = 'alert-danger';
                 }
 
                 if (data) {
-                    alertMessage = "Photo has been successfully selected!";
+                    alertOnSelectingPhoto = "Photo has been successfully selected!";
                     alertClass = 'alert-success';
 
                     Session.set('photoSelected', data);
@@ -43,7 +43,7 @@ if (Meteor.isClient) {
                 $('#step1').find('.next-step').removeClass('disabled');
                 $('#step1').find('.next-step').css('pointer-events', 'all');
 
-                Session.set('alertMessage', alertMessage);
+                Session.set('alertOnSelectingPhoto', alertOnSelectingPhoto);
             };
 
             MeteorCamera.getPicture(cameraOpts, callback);
@@ -58,12 +58,12 @@ if (Meteor.isClient) {
 
             var callback = function(error, data) {
                 if (error) {
-                    alertMessage = "Error selecting photo!";
+                    alertOnSelectingPhoto = "Error selecting photo!";
                     alertClass = 'alert-danger';
                 }
 
                 if (data) {
-                    alertMessage = "Photo has been successfully selected!";
+                    alertOnSelectingPhoto = "Photo has been successfully selected!";
                     alertClass = 'alert-success';
 
                     $('#step1').find('.next-step').removeClass('disabled');
@@ -75,24 +75,24 @@ if (Meteor.isClient) {
                 $('#step1').find('.alert').addClass(alertClass);
                 $('#step1').find('.alert').css('display', 'block');
 
-                Session.set('alertMessage', alertMessage);
+                Session.set('alertOnSelectingPhoto', alertOnSelectingPhoto);
             };
 
             MeteorCamera.getPicture(cameraOpts, callback);
         },
         'click .process-photo': function() {
-            waitingDialog.show('Photo is being processed...');
+            waitingDialog.show('Processing photo...');
 
         	var photo = Session.get('photoSelected') || '';
 
             if (photo === '') {
-                photoProcessed = "No photo selected.";
+                alertOnProcessingPhoto = "No photo selected.";
                 alertClass = 'alert-danger';
 
                 $('#step2').find('.alert').addClass(alertClass);
                 $('#step2').find('.alert').css('display', 'block');
 
-                Session.set('photoProcessed', photoProcessed);
+                Session.set('alertOnProcessingPhoto', alertOnProcessingPhoto);
 
                 waitingDialog.hide();
 
@@ -103,12 +103,12 @@ if (Meteor.isClient) {
                 waitingDialog.hide();
 
                 if (error) {
-                    photoProcessed = "Error processing photo!";
+                    alertOnProcessingPhoto = "Error processing photo!";
                     alertClass = 'alert-danger';
                 }
 
                 if (data) {
-                    photoProcessed = "Photo has been successfully processed";
+                    alertOnProcessingPhoto = "Photo has been successfully processed";
                     alertClass = 'alert-success';
 
                     $('#step2').find('.next-step').removeClass('disabled');
@@ -118,7 +118,7 @@ if (Meteor.isClient) {
                 $('#step2').find('.alert').addClass(alertClass);
                 $('#step2').find('.alert').css('display', 'block');
 
-                Session.set('photoProcessed', photoProcessed);
+                Session.set('alertOnProcessingPhoto', alertOnProcessingPhoto);
 			});
         },
         'click .view-content': function() {
@@ -137,20 +137,20 @@ if (Meteor.isClient) {
             })
         },
         'click .generate-pdf': function() {
-            var pdfName = Session.get('pdfName') || '';
+            var pdfName = $('.enter-pdf-name').val() || '';
 
-            waitingDialog.show('PDF is being generated...');
+            waitingDialog.show('Generating PDF...');
 
-            Meteor.call('generatePDF', function(error, data) {
+            Meteor.call('generatePDF', pdfName, function(error, data) {
                 waitingDialog.hide();
                 
                 if (error) {
-                    pdfGenerated = "Error generating PDF!";
+                    alertOnGeneratingPDF = "Error generating PDF!";
                     alertClass = 'alert-danger';
                 }
 
                 if (data) {
-                    pdfGenerated = "PDF has been successfully generated!";
+                    alertOnGeneratingPDF = "PDF has been successfully generated!";
                     alertClass = 'alert-success';
 
                     $('#step3').find('.next-step').removeClass('disabled');
@@ -160,24 +160,50 @@ if (Meteor.isClient) {
                 $('#step3').find('.alert').addClass(alertClass);
                 $('#step3').find('.alert').css('display', 'block');
 
-                Session.set('pdfGenerated', pdfGenerated);
+                Session.set('alertOnGeneratingPDF', alertOnGeneratingPDF);
             })
         },
-        'click .send-to-sugar': function() {
-            Meteor.call('performSugarRequest', function(error, data) {
-                alert(data.data);
+        'click .sync-to-sugar': function() {
+            waitingDialog.show('Synchronizing to Sugar...');
+
+            var sugarURL = $('#sugar-url').val() || '';
+            var sugarUsername = $('#sugar-username').val() || '';
+            var sugarPassword = $('#sugar-password').val() || '';
+
+            var args = [sugarURL, sugarUsername, sugarPassword];
+
+            Meteor.call('performSugarRequest', args, function(error, data) {
+                waitingDialog.hide();
+
+                if (error) {
+                    alertOnSyncingToSugar = "Error synchronizing to Sugar!";
+                    alertClass = 'alert-danger';
+                }
+
+                if (data) {
+                    alertOnSyncingToSugar = data.data;
+                    alertClass = 'alert-success';
+
+                    $('#step4').find('.next-step').removeClass('disabled');
+                    $('#step4').find('.next-step').css('pointer-events', 'all');
+                }
+
+                $('#step4').find('.alert').addClass(alertClass);
+                $('#step4').find('.alert').css('display', 'block');
+
+                Session.set('alertOnSyncingToSugar', alertOnSyncingToSugar);
             })
         },
     });
     Template.processPhoto.helpers({
-        'alertMessage': function() {
-            return Session.get('alertMessage');
+        'alertOnSelectingPhoto': function() {
+            return Session.get('alertOnSelectingPhoto');
         },
         'photoSelected': function() {
             return Session.get('photoSelected');
         },
-        'photoProcessed': function() {
-            return Session.get('photoProcessed');
+        'alertOnProcessingPhoto': function() {
+            return Session.get('alertOnProcessingPhoto');
         },
         'photoContent': function() {
             return Session.get('photoContent');
@@ -185,8 +211,11 @@ if (Meteor.isClient) {
         'pdfName': function() {
             return Session.get('pdfName');
         },
-        'pdfGenerated': function() {
-            return Session.get('pdfGenerated');
+        'alertOnGeneratingPDF': function() {
+            return Session.get('alertOnGeneratingPDF');
+        },
+        'alertOnSyncingToSugar': function() {
+            return Session.get('alertOnSyncingToSugar');
         },
     });
 }
