@@ -3,24 +3,19 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-default">
-        <p class="text-center">Document automatic scanning and annotating</p>
-    </nav>
-
-    {{> processPhoto}}
-
-    <nav class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-            <p class="text-center"> 
-                &copy; 2017 Document automatic scanning and annotating. 
-                <br/> 
-                All Rights Reserved | Design by <a href="http://www.w-systems.com" target="=_blank">W-Systems</a>
-            </p>
-        </div>
-    </nav>
+    {{> headerPart}}
+    {{> bodyPart}}
+    {{> footerPart}}
 </body>
 
-<template name="processPhoto">
+<template name="headerPart">
+    <nav class="navbar navbar-default">
+        <p class="text-center">Document automatic scanning and annotating</p>
+        <h4><i class="fa fa-refresh refresh-app" aria-hidden="true"></i> (Reload application) </h4>
+    </nav>
+</template>
+
+<template name="bodyPart">
     <div class="container">
         <div class="row">
             <section>
@@ -104,6 +99,8 @@
                                 <h3>Handle process result</h3>
                                 <p>Perform desired action regarding the returned content</p>
                                 <i aria-hidden="true" class="fa fa-eye fa-2x view-content" data-toggle="modal" href="#viewContentModal"></i> View content 
+                                <i aria-hidden="true" class="fa fa-tags fa-2x add-doc-metadata" data-toggle="modal" href="#addDocMetadata"></i> Add document metadata 
+                                <br/>
                                 <i aria-hidden="true" class="fa fa-file-pdf-o fa-2x" data-toggle="modal" href="#generatePDFModals"></i> Generate PDF<br>
                                 <br>
                                 <ul class="list-inline pull-left">
@@ -129,10 +126,43 @@
                                                 <h4 class="modal-title">Processed photo's result</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <p>{{photoContent}}</p>
+                                                <p>{{photoContent}}</p>                
                                             </div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 
+                                    Add document metadata modal
+                                -->
+                                <div class="modal modal-wide fade" id="addDocMetadata">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+                                                <h4 class="modal-title">Enter document metadata</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="doc-title">Title</label> 
+                                                        <input class="form-control" id="doc-title" type="text" value="{{docTitle}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="doc-author">Author</label> 
+                                                        <input class="form-control" id="doc-author" type="text" value="{{docAuthor}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-control-label" for="doc-date">Date</label> 
+                                                        <input class="form-control" id="doc-date" type="date" value="{{docDate}}">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-default close-modal" data-dismiss="modal" type="button">Close</button> 
+                                                <button class="btn btn-primary set-doc-metadata" data-dismiss="modal" type="button">Save</button>
                                             </div>
                                         </div>
                                     </div>
@@ -219,7 +249,7 @@
                                 <h3>Complete</h3>
                                 <p>You have successfully completed all steps.</p><br>
                                 <ul class="list-inline pull-right">
-                                    <li><button class="btn btn-primary next-step disabled" type="button">Next</button></li>
+                                    <li><button class="btn btn-primary done" type="button">Done</button></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
@@ -377,4 +407,16 @@
             }
          });
     </script>
+</template>
+
+<template name="footerPart">
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <p class="text-center"> 
+                &copy; 2017 Document automatic scanning and annotating. 
+                <br/> 
+                All Rights Reserved | Design by <a href="http://www.w-systems.com" target="=_blank">W-Systems</a>
+            </p>
+        </div>
+    </nav>
 </template>

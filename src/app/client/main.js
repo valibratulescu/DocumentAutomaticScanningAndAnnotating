@@ -16,7 +16,12 @@ if (Meteor.isClient) {
 
     Meteor.methods({
     });
-    Template.processPhoto.events({
+    Template.headerPart.events({
+        'click .refresh-app': function(e) {
+            Meteor._reload.reload();
+        }
+    })
+    Template.bodyPart.events({
         'click .take-photo': function() {
             var cameraOpts = {
                 quality: 100,
@@ -136,6 +141,16 @@ if (Meteor.isClient) {
                 Session.set('photoContent', photoContent);
             })
         },
+        'click .set-doc-metadata': function() {
+            var docTitle = $('#doc-title').val() || '';
+            var docAuthor = $('#doc-author').val() || '';
+            var docDate = $('#doc-date').val() || '';
+
+            Session.set('docTitle', docTitle);
+            Session.set('docAuthor', docAuthor);
+            Session.set('docDate', docDate);
+
+        },
         'click .generate-pdf': function() {
             var pdfName = $('.enter-pdf-name').val() || '';
 
@@ -194,8 +209,13 @@ if (Meteor.isClient) {
                 Session.set('alertOnSyncingToSugar', alertOnSyncingToSugar);
             })
         },
+        'click .done': function(e) {
+            Meteor._reload.reload();
+        },
     });
-    Template.processPhoto.helpers({
+    Template.footerPart.events({
+    })
+    Template.bodyPart.helpers({
         'alertOnSelectingPhoto': function() {
             return Session.get('alertOnSelectingPhoto');
         },
@@ -207,6 +227,15 @@ if (Meteor.isClient) {
         },
         'photoContent': function() {
             return Session.get('photoContent');
+        },
+        'docTitle': function() {
+            return Session.get('docTitle');
+        },
+        'docAuthor': function() {
+            return Session.get('docAuthor');
+        },
+        'docDate': function() {
+            return Session.get('docDate');
         },
         'pdfName': function() {
             return Session.get('pdfName');
